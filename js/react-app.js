@@ -1,7 +1,7 @@
 "use strict";
 
 // UserView
-var UserView = React.createClass({
+Session.UserView = React.createClass({
 
   getInitialState: function () {
     return { data: [] };
@@ -10,6 +10,12 @@ var UserView = React.createClass({
   getUser: function () {    
     Session.user = new User({username:this.state.username.trim(), fullname: this.state.username});    
     return Session.user;    
+  },
+
+  setUser: function (user) {
+    console.log("setUser");
+    this.setState.username(user.username);
+    this.setState.password(user.password);
   },
 
   handleSignOn: function (e) {
@@ -53,7 +59,7 @@ var UserView = React.createClass({
         <input type="submit" onClick={this.handleSignOn} name="action" value="Signon"/>
         <input type="submit" onClick={this.handleRegister} name="action" value="Register"/>
         </form>
-        <ScenarioView />
+        <Session.ScenarioView />
       </div>
     );
   }
@@ -61,7 +67,7 @@ var UserView = React.createClass({
 });
 
 // ScenarioView
-var ScenarioView = React.createClass({
+Session.ScenarioView = React.createClass({
 
   getInitialState: function () {
     return { data: [] };
@@ -72,14 +78,20 @@ var ScenarioView = React.createClass({
   },
 
   handleSubmit: function(e) {
-    console.log("handleSubmit");
     e.preventDefault(); 
-    if (!this.state.scenarioName || typeof Session.user === "undefined") { return; }
-    this.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
-    Session.scenario = this.scenario.save();
+    if (typeof Session.user === "undefined") {
+      alert("You must be signed in to create a scenario.");
+      return;
+    }
+    if (!this.state.scenarioName) { 
+      alert("Please provide a scenario name.");
+      return; 
+    }
+    Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
+    Session.scenario.save();
     alert("Saved Scenario.");
-
   },
+
   render: function () {
     return (
       <div className="scenario-view">
@@ -87,14 +99,14 @@ var ScenarioView = React.createClass({
       <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>      
       <input onClick={this.handleSubmit} type="submit" value="Save"/>
       </form>
-      <VoteView/>
+      <Session.VoteView/>
       </div>
     );
   }
 });
 
 // VoteView
-var VoteView = React.createClass({
+Session.VoteView = React.createClass({
 
   getInitialState: function () {
     return { data: [] };
@@ -105,13 +117,12 @@ var VoteView = React.createClass({
   },
 
   handleSubmit: function(e) {
-    console.log("handleSubmit");
     e.preventDefault(); 
     if (!this.state.cardValue || typeof Session.user === "undefined" || typeof Session.scenario === "undefined") { return; }
     Session.user.vote(Session.scenario, this.state.cardValue);
     alert("Vote saved.");
-
   },
+
   render: function () {
     return (
       <div className="vote-view">
@@ -123,5 +134,5 @@ var VoteView = React.createClass({
     );
   }
 });
-
-ReactDOM.render(<UserView />, document.getElementById('container'));
+App.init();
+ReactDOM.render(<Session.UserView />, document.getElementById('container'));

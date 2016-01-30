@@ -1,6 +1,8 @@
 window.Scenario =  function Scenario(options) {
-  this.name = options.name;
-  this.user = options.user;
+  if (options) {
+    this.name = options.name;
+    this.user = options.user;    
+  }
 }
 
 Scenario.prototype.save = function () {
@@ -8,6 +10,7 @@ Scenario.prototype.save = function () {
 
   Db.Scenarios.info().then(function (result) {
     that.id = result.update_seq + ":" + Date.now().toString();
+    console.log("Saving scenario '"+that.id+"'");
     Db.Scenarios.put({
       _id: that.id,
       name: that.name,
@@ -23,6 +26,20 @@ Scenario.prototype.save = function () {
 
   return this;
 };
+
+Scenario.prototype.get = function (id, callback) {
+  var that = this;
+  console.log("id = [" + id+"]");
+  Db.Scenarios.get(id).then(function (doc) {
+    that._rev = doc._rev;
+    that.id = doc._id;
+    that.name = doc.name;
+    if (callback) { callback(doc); }
+
+  }).catch(function (err) {
+    if (callback) { callback(err); }
+  });
+}
 
 Scenario.prototype.allVotes = function(callback) {
   $.getJSON(VOTES_END_POINT +"%22"+this.id+"%22", function( results ) {
