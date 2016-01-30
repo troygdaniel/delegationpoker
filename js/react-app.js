@@ -7,33 +7,35 @@ Session.UserView = React.createClass({
     return { data: [] };
   },
 
-  getUser: function () {    
-    Session.user = new User({username:this.state.username.trim(), fullname: this.state.username});    
-    return Session.user;    
+  componentDidMount: function() {
+    this.fetchUser();
   },
 
-  setUser: function (user) {
-    console.log("setUser");
-    this.setState.username(user.username);
-    this.setState.password(user.password);
+  fetchUser: function () {
+    var that = this;
+    Session.user.fetchFromCookie(function() {
+        that.setState({username: Session.user.username});
+        that.setState({password: Cookies.get("password")});
+    });
   },
 
   handleSignOn: function (e) {
-    e.preventDefault(); 
+    if (e) { e.preventDefault(); }
     if (!this.state.username || !this.state.password ) { return; }
-    this.getUser().signon(this.state.password.trim(), function(){
-      // Signon success
-      alert("Sign on success.");
-    }, function() {
-      // Failed to sign on
-      alert("Failed to sign on.");
+    var that = this;
+    Session.user.signon(this.state.password.trim(), function(results){      
+      if (Session.user.hasAuthenticated === true) {
+        alert("Sign on success.");  
+      } else {
+        alert("Failed to sign on.");  
+      }    
     });
   },
 
   handleRegister: function (e){
     e.preventDefault();
     if (!this.state.username || !this.state.password ) { return; }
-    this.getUser().register(this.state.password.trim(), function () {
+    Session.user.register(this.state.password.trim(), function () {
       // Registered
       alert("Registered.");
     }, function () {
@@ -43,6 +45,7 @@ Session.UserView = React.createClass({
   },
 
   handleUsername: function(e) {
+    Session.user.username = e.target.value;
     this.setState({username: e.target.value});
   },
 
@@ -59,7 +62,7 @@ Session.UserView = React.createClass({
         <input type="submit" onClick={this.handleSignOn} name="action" value="Signon"/>
         <input type="submit" onClick={this.handleRegister} name="action" value="Register"/>
         </form>
-        <Session.ScenarioView />
+        <Session.ScenarioView scenario={Session.scenario}/>
       </div>
     );
   }
@@ -70,7 +73,7 @@ Session.UserView = React.createClass({
 Session.ScenarioView = React.createClass({
 
   getInitialState: function () {
-    return { data: [] };
+    return { scenarioName: Session.scenario.scenarioName };
   },
 
   handleScenarioName: function(e) {
@@ -90,6 +93,24 @@ Session.ScenarioView = React.createClass({
     Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
     Session.scenario.save();
     alert("Saved Scenario.");
+  },
+
+  componentDidMount: function() {
+    this.fetchScenario();
+  },
+
+  fetchScenario: function () {
+    var that = this;
+    // Fetch the scenario given a query string
+    if (Session.scenarioId) {
+      Session.scenario.get(Session.scenarioId, function (doc) {
+        if (doc.error) { 
+          console.error("Scenario '"+Session.scenarioId+"' not found."); 
+        } else {
+          that.setState({scenarioName: Session.scenario.name});
+        }
+      });
+    }
   },
 
   render: function () {
@@ -134,5 +155,5 @@ Session.VoteView = React.createClass({
     );
   }
 });
-App.init();
+
 ReactDOM.render(<Session.UserView />, document.getElementById('container'));

@@ -10,7 +10,6 @@ Scenario.prototype.save = function () {
 
   Db.Scenarios.info().then(function (result) {
     that.id = result.update_seq + ":" + Date.now().toString();
-    console.log("Saving scenario '"+that.id+"'");
     Db.Scenarios.put({
       _id: that.id,
       name: that.name,
@@ -29,7 +28,6 @@ Scenario.prototype.save = function () {
 
 Scenario.prototype.get = function (id, callback) {
   var that = this;
-  console.log("id = [" + id+"]");
   Db.Scenarios.get(id).then(function (doc) {
     that._rev = doc._rev;
     that.id = doc._id;

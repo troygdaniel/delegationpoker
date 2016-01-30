@@ -35,12 +35,11 @@ User.prototype.signon = function(password, callback) {
   var that = this;
   var endpoint = AUTH_END_POINT + "%22" + CryptoJS.SHA256(password).toString()+"%22";
   $.getJSON(endpoint, function( results ) {
-    
     if (that.didFindMatchingUser(results)) {
       that.setCookie(that.username, password);
-      if (callback) callback();
+      if (callback) callback(results);
     } else {
-      if (callback) callback();
+      if (callback) callback(results);
     }
   });
 
@@ -58,6 +57,8 @@ User.prototype.fetchFromCookie = function (callback) {
 }
 
 User.prototype.didFindMatchingUser = function (results) {
+  this.hasAuthenticated = false;
+
   for (indx in results.rows) {
     var row = results.rows[indx];
     var uname = row.value.username;
@@ -67,11 +68,10 @@ User.prototype.didFindMatchingUser = function (results) {
       this.id = row.id;
       this.rev = row.value.rev;
       this.fullname = row.value.fullname;
-
-      return true;
+      this.hasAuthenticated = true;
     }
   }
-  return false;
+  return this.hasAuthenticated;
 }
 
 User.prototype.remove = function () {
