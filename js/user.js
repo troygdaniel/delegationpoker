@@ -22,7 +22,7 @@ User.prototype.register = function(password, onSuccess, onFailure) {
   }).then(function (doc) {
     that.id = doc.id;
     that.rev = doc.rev;
-    this._hasAuthenticated = true;
+    that._hasAuthenticated = true;
     that.setCookie(that.username, password);
     
     if (onSuccess) onSuccess(doc);
