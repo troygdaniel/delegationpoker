@@ -27,6 +27,7 @@ Session.UserView = React.createClass({
     Session.user.signon(this.state.password.trim(), function(results){      
       if (Session.user.hasAuthenticated() === true) {
         alert("Sign on success.");  
+        that.setState({fullname: Session.user.fullname});
       } else {
         alert("Failed to sign on.");  
       }    
@@ -105,7 +106,7 @@ Session.ScenarioView = React.createClass({
         window.location.href="#"+Session.scenario.id;
       });
       window.location.href="#"+Session.scenario.id;
-      
+
     } else {
       if (Session.user.username === Session.scenario.user.username) {
         Session.scenario.name = this.state.scenarioName;
@@ -113,7 +114,10 @@ Session.ScenarioView = React.createClass({
           window.location.href="#"+Session.scenario.id;
           alert("Scenario updated.");
         });        
+      } else {
+        alert("You are not authorized to edit someone elses scenario.")
       }
+
     }
   },
 
