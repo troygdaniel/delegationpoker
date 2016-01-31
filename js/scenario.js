@@ -5,22 +5,43 @@ window.Scenario =  function Scenario(options) {
   }
 }
 
-Scenario.prototype.save = function () {
+Scenario.prototype.save = function (callback) {
   var that = this;
 
   Db.Scenarios.info().then(function (result) {
+    // debugger 
     that.id = result.update_seq + ":" + Date.now().toString();
     Db.Scenarios.put({
       _id: that.id,
+      _rev: that.rev,
       name: that.name,
       user: that.user    
     }).then(function(doc) {
       that.id = doc.id;
-      that.rev = doc.rev;      
+      that.rev = doc.rev;
+      if (callback) { callback(doc); }
     });
   })
   .catch(function (err) {
     console.log(err);
+    if (callback) { callback(err); }
+  });
+
+  return this;
+};
+
+Scenario.prototype.update = function (callback) {
+  var that = this;
+
+  Db.Scenarios.put({
+    _id: that.id,
+    _rev: that.rev,
+    name: that.name,
+    user: that.user    
+  }).then(function(doc) {
+    that.id = doc.id;
+    that.rev = doc.rev;
+    if (callback) { callback(doc); }
   });
 
   return this;
@@ -29,9 +50,10 @@ Scenario.prototype.save = function () {
 Scenario.prototype.get = function (id, callback) {
   var that = this;
   Db.Scenarios.get(id).then(function (doc) {
-    that._rev = doc._rev;
+    that.rev = doc._rev;
     that.id = doc._id;
     that.name = doc.name;
+    that.user = doc.user;
     if (callback) { callback(doc); }
 
   }).catch(function (err) {

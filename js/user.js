@@ -1,5 +1,5 @@
 window.User =  function User(options){
-  
+  this._hasAuthenticated = false;
   if (options) {
     if (options.username) this.username = options.username;
     if (options.fullname) this.fullname = options.fullname;
@@ -22,7 +22,9 @@ User.prototype.register = function(password, onSuccess, onFailure) {
   }).then(function (doc) {
     that.id = doc.id;
     that.rev = doc.rev;
-
+    this._hasAuthenticated = true;
+    that.setCookie(that.username, password);
+    
     if (onSuccess) onSuccess(doc);
   }).catch(onFailure);  
 
@@ -56,8 +58,12 @@ User.prototype.fetchFromCookie = function (callback) {
   this.signon(pwd, callback);
 }
 
+User.prototype.hasAuthenticated = function () {
+  return this._hasAuthenticated;
+}
+
 User.prototype.didFindMatchingUser = function (results) {
-  this.hasAuthenticated = false;
+  this._hasAuthenticated = false;
 
   for (indx in results.rows) {
     var row = results.rows[indx];
@@ -68,10 +74,10 @@ User.prototype.didFindMatchingUser = function (results) {
       this.id = row.id;
       this.rev = row.value.rev;
       this.fullname = row.value.fullname;
-      this.hasAuthenticated = true;
+      this._hasAuthenticated = true;
     }
   }
-  return this.hasAuthenticated;
+  return this._hasAuthenticated;
 }
 
 User.prototype.remove = function () {

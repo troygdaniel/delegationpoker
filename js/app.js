@@ -16,9 +16,10 @@ Session.scenario = new Scenario();
 Session.user = new User();
 
 // Grab the Scenario ID from the query string
-if (location.search) {
-  var queryString = location.search.substr(1, location.search.length);
-  if (queryString) {
-    Session.scenarioId = queryString;
+if (window.location.hash.substr(1)) {
+  var hashId = window.location.hash.substr(1);
+  if (hashId) {
+    Session.scenarioId = hashId;
   }
 }
+console.log("location.href = " + hashId);

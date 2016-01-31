@@ -11,39 +11,36 @@ window.TestCases = function () {
   TestCases.troy_scenario = new Scenario({user: TestCases.troy, name: "Hiring a new employee"});
 
   setTimeout(this.test1,100);
-  setTimeout(this.test1b,200);
-  setTimeout(this.test2,300);
-  setTimeout(this.test3,400);
-  setTimeout(this.test4,500);
-  setTimeout(this.test5,600);
-  setTimeout(this.test6,700);
-  setTimeout(this.test7,800);
-  setTimeout(this.test8,900);
-  setTimeout(this.test9,1000);
-  setTimeout(this.test10,1100);
-  setTimeout(this.test11,1200);
-  setTimeout(this.test12,1300);
-  setTimeout(this.test13,1400);
-  setTimeout(this.test14,1500);
-  setTimeout(this.finalMssg,1600);
-  setTimeout(this.cleanup,60000);
+  setTimeout(this.test2,500);
+  setTimeout(this.test3,1000);
+  setTimeout(this.test4,1500);
+  setTimeout(this.test5,2000);
+  setTimeout(this.test6,2500);
+  setTimeout(this.test7,3000);
+  setTimeout(this.test8,3500);
+  setTimeout(this.test9,4000);
+  setTimeout(this.test10,4500);
+  setTimeout(this.test11,5000);
+  setTimeout(this.test12,5500);
+  setTimeout(this.test13,6000);
+  setTimeout(this.test14,6500);
+  setTimeout(this.finalMssg,7000);
+  // setTimeout(this.cleanup,60000);
 
 };
 
 window.TestCases.prototype.test1 = function () {
   // console.log("TEST1: Create Jiddu user, scenario");
   TestCases.jiddu.register("testpass", function (json) {
-    TestCases.jiddu_scenario = TestCases.jiddu_scenario.save();
+    TestCases.jiddu_scenario = TestCases.jiddu_scenario.save(function () {
+      TestCases.jiddu_vote = TestCases.jiddu.vote(TestCases.jiddu_scenario, 1);      
+    });
   });
-}
-window.TestCases.prototype.test1b = function () {
-  // console.log("TEST1b: Jiddu votes '1' ");
-  TestCases.jiddu_vote = TestCases.jiddu.vote(TestCases.jiddu_scenario, 1);  
 }
 
 window.TestCases.prototype.test2 = function () {
   // console.log("TEST2: Jiddu votes '2' for scenario");
-  TestCases.jiddu_vote = TestCases.jiddu.vote(TestCases.jiddu_scenario, 2);
+    TestCases.jiddu_vote = TestCases.jiddu.vote(TestCases.jiddu_scenario, 2);
 }
 
 window.TestCases.prototype.test3 = function () {
@@ -57,7 +54,7 @@ window.TestCases.prototype.test3 = function () {
 window.TestCases.prototype.test4 = function () {
 
   TestCases.bruce.signon("badpassword", function () {    
-    if (TestCases.bruce.hasAuthenticated === true) {
+    if (TestCases.bruce.hasAuthenticated() === true) {
       console.log(">> FAILED TEST4: Bruce fails to sign on");
     }
   });
@@ -66,7 +63,7 @@ window.TestCases.prototype.test4 = function () {
 window.TestCases.prototype.test5 = function () {
 
   TestCases.bruce.signon("testpass", function (json) {    
-    if (TestCases.bruce.hasAuthenticated === false) {
+    if (TestCases.bruce.hasAuthenticated() === false) {
       console.log(">> FAILED TEST5: Bruce succeeds to sign on and Bruce votes 3");
     }
 
@@ -99,7 +96,7 @@ window.TestCases.prototype.test9 = function () {
 
 window.TestCases.prototype.test10 = function () {
   TestCases.troy.signon("badpassword", function () {
-    if (TestCases.troy.hasAuthenticated === true) {
+    if (TestCases.troy.hasAuthenticated() === true) {
       console.log(">> FAILED TEST 10: Troy failed signon");
     } 
   });

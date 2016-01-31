@@ -15,6 +15,7 @@ Session.UserView = React.createClass({
     var that = this;
     Session.user.fetchFromCookie(function() {
         that.setState({username: Session.user.username});
+        that.setState({fullname: Session.user.fullname});
         that.setState({password: Cookies.get("password")});
     });
   },
@@ -24,7 +25,7 @@ Session.UserView = React.createClass({
     if (!this.state.username || !this.state.password ) { return; }
     var that = this;
     Session.user.signon(this.state.password.trim(), function(results){      
-      if (Session.user.hasAuthenticated === true) {
+      if (Session.user.hasAuthenticated() === true) {
         alert("Sign on success.");  
       } else {
         alert("Failed to sign on.");  
@@ -53,12 +54,18 @@ Session.UserView = React.createClass({
     this.setState({password: e.target.value});
   },
 
+  handleFullname: function(e) {
+    Session.user.fullname = e.target.value;    
+    this.setState({fullname: e.target.value});
+  },
+
   render: function () {
     return (
       <div className="user-view">
         <form className="scenarioForm" onSubmit={this.handleSignOn}>
         <input type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/>      
-       <input type="text" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/>      
+       <input type="password" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/>      
+       <input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/>      
         <input type="submit" onClick={this.handleSignOn} name="action" value="Signon"/>
         <input type="submit" onClick={this.handleRegister} name="action" value="Register"/>
         </form>
@@ -82,7 +89,7 @@ Session.ScenarioView = React.createClass({
 
   handleSubmit: function(e) {
     e.preventDefault(); 
-    if (typeof Session.user === "undefined") {
+    if (Session.user.hasAuthenticated() === false) {
       alert("You must be signed in to create a scenario.");
       return;
     }
@@ -90,9 +97,24 @@ Session.ScenarioView = React.createClass({
       alert("Please provide a scenario name.");
       return; 
     }
-    Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
-    Session.scenario.save();
-    alert("Saved Scenario.");
+    // TODO: Update scenario if it exists
+    if (typeof Session.scenario.rev === "undefined") {
+      Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
+      Session.scenario.save(function() {
+        alert("Saved Scenario.");
+        window.location.href="#"+Session.scenario.id;
+      });
+      window.location.href="#"+Session.scenario.id;
+      
+    } else {
+      if (Session.user.username === Session.scenario.user.username) {
+        Session.scenario.name = this.state.scenarioName;
+        Session.scenario.update(function (doc){
+          window.location.href="#"+Session.scenario.id;
+          alert("Scenario updated.");
+        });        
+      }
+    }
   },
 
   componentDidMount: function() {
@@ -156,4 +178,5 @@ Session.VoteView = React.createClass({
   }
 });
 
+// TODO: Update location with scenario id
 ReactDOM.render(<Session.UserView />, document.getElementById('container'));
