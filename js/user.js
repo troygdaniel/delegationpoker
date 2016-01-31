@@ -7,7 +7,11 @@ window.User =  function User(options){
 };
 
 User.prototype.vote = function (scenario, _cardValue) {
-  return new Vote({user:this, scenario:scenario, cardValue: _cardValue});
+  if (this.hasAuthenticated() === true) {
+    return new Vote({user:this, scenario:scenario, cardValue: _cardValue});  
+  } else {
+    return false;
+  }
 }
 
 User.prototype.register = function(password, onSuccess, onFailure) {
@@ -24,7 +28,7 @@ User.prototype.register = function(password, onSuccess, onFailure) {
     that.rev = doc.rev;
     that._hasAuthenticated = true;
     that.setCookie(that.username, password);
-    
+
     if (onSuccess) onSuccess(doc);
   }).catch(onFailure);  
 

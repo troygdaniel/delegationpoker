@@ -104,26 +104,26 @@ window.TestCases.prototype.test10 = function () {
 
 window.TestCases.prototype.test11 = function () {
   // console.log("TEST 11: Get all votes for Troy");
-  TestCases.troy_scenario.allVotes();
+  console.log(TestCases.troy_scenario.votes());
 }
 
 window.TestCases.prototype.test12 = function () {
   // console.log("TEST 12: Get all votes for Jiddu");
-  TestCases.jiddu_scenario.allVotes();
+  console.log(TestCases.jiddu_scenario.votes());
 }
 
 window.TestCases.prototype.test13 = function () {
   var x = new Scenario();
   x.get(TestCases.troy_scenario.id, function(doc) {
+    debugger
     if (doc && doc.error) {
       console.log(">> FAIL TEST 13: Fetch troy scenario");
-    } else if (doc && doc._rev) {      
+    } else { 
        // console.log(">> pass TEST 13: Fetch troy scenario");
-    } else {
-      console.log(">> FAIL TEST 13: Fetch troy scenario");
-    }    
+    } 
   });  
 }
+
 window.TestCases.prototype.test14 = function () {
   var x = new Scenario();
   x.get("boobar", function(doc) {

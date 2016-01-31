@@ -98,7 +98,6 @@ Session.ScenarioView = React.createClass({
       alert("Please provide a scenario name.");
       return; 
     }
-    // TODO: Update scenario if it exists
     if (typeof Session.scenario.rev === "undefined") {
       Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
       Session.scenario.save(function() {
@@ -134,8 +133,22 @@ Session.ScenarioView = React.createClass({
           console.error("Scenario '"+Session.scenarioId+"' not found."); 
         } else {
           that.setState({scenarioName: Session.scenario.name});
+          that.setState({votes: Session.scenario.votes});
         }
       });
+    }
+  },
+
+  votes: function () {
+     var rows = [];
+     if (Session.scenario.votes) {
+      for (var i = 0; i < Session.scenario.votes.length; i++) {
+        var vote = Session.scenario.votes[i];
+        rows.push( <div>{vote.value.username} = {vote.value.card_value}</div> );
+      }
+      return (
+        <div>{rows}</div>
+      );      
     }
   },
 
@@ -145,15 +158,17 @@ Session.ScenarioView = React.createClass({
       <form className="scenarioForm" onSubmit={this.handleSubmit}>
       <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>      
       <input onClick={this.handleSubmit} type="submit" value="Save"/>
-      </form>
-      <Session.VoteView/>
+      </form>      
+      <Session.PlaceVoteView/>
+      <strong>Votes</strong> 
+      {this.votes()}
       </div>
     );
   }
 });
 
-// VoteView
-Session.VoteView = React.createClass({
+// PlaceVoteView
+Session.PlaceVoteView = React.createClass({
 
   getInitialState: function () {
     return { data: [] };
@@ -166,8 +181,11 @@ Session.VoteView = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault(); 
     if (!this.state.cardValue || typeof Session.user === "undefined" || typeof Session.scenario === "undefined") { return; }
-    Session.user.vote(Session.scenario, this.state.cardValue);
-    alert("Vote saved.");
+    if (Session.user.vote(Session.scenario, this.state.cardValue) === false) {
+      alert("Please sign in before voting.");
+    } else {
+      alert("Vote saved.");
+    }
   },
 
   render: function () {

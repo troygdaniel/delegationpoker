@@ -54,18 +54,16 @@ Scenario.prototype.get = function (id, callback) {
     that.id = doc._id;
     that.name = doc.name;
     that.user = doc.user;
-    if (callback) { callback(doc); }
+    console.log(VOTES_END_POINT +"%22"+that.id+"%22");
+    $.getJSON(VOTES_END_POINT +"%22"+that.id+"%22", function( results ) {
+      that.votes = results.rows;      
+      if (callback) callback(results);
+    });
 
   }).catch(function (err) {
     if (callback) { callback(err); }
   });
 }
-
-Scenario.prototype.allVotes = function(callback) {
-  $.getJSON(VOTES_END_POINT +"%22"+this.id+"%22", function( results ) {
-    if (callback) callback(results);
-  });
-};
 
 Scenario.prototype.shareableLink = function() {
 };
