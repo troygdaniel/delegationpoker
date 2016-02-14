@@ -25,7 +25,7 @@ window.TestCases = function () {
   setTimeout(this.test13,6000);
   setTimeout(this.test14,6500);
   setTimeout(this.finalMssg,7000);
-  // setTimeout(this.cleanup,60000);
+  setTimeout(this.cleanup,60000);
 
 };
 
@@ -104,18 +104,17 @@ window.TestCases.prototype.test10 = function () {
 
 window.TestCases.prototype.test11 = function () {
   // console.log("TEST 11: Get all votes for Troy");
-  console.log(TestCases.troy_scenario.votes;
+  console.log(TestCases.troy_scenario.votes);
 }
 
 window.TestCases.prototype.test12 = function () {
   // console.log("TEST 12: Get all votes for Jiddu");
-  console.log(TestCases.jiddu_scenario.votes;
+  console.log(TestCases.jiddu_scenario.votes);
 }
 
 window.TestCases.prototype.test13 = function () {
   var x = new Scenario();
   x.get(TestCases.troy_scenario.id, function(doc) {
-    debugger
     if (doc && doc.error) {
       console.log(">> FAIL TEST 13: Fetch troy scenario");
     } else { 

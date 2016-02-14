@@ -163,7 +163,7 @@ Session.ScenarioView = React.createClass({
       <Session.AllVotesView onVoteSubmit={this.fetchScenario}/>
       <strong>Votes</strong> 
       {this.votes()}
-      <button onClick={this.fetchScenario}>Refresh votes</button>
+      <button onClick={this.fetchScenario}>Get latest votes</button>
       </div>      
     );
   }
@@ -189,6 +189,10 @@ Session.AllVotesView = React.createClass({
     } else {
       alert("Vote saved.");      
     }
+  },
+
+  componentDidMount: function () {
+    setInterval(this.props.onVoteSubmit,30000)
   },
 
   render: function () {
