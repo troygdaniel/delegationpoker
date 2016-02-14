@@ -5,7 +5,7 @@ window.Vote =  function Vote(options, onSuccess) {
   
   var that = this;
   this.createOrFindVote(function () {
-      that.save(that.cardValue);
+      that.save(that.cardValue, onSuccess);
   });
 
 }
@@ -22,7 +22,7 @@ Vote.prototype.createOrFindVote = function (callback) {
   });
 }
 
-Vote.prototype.save = function (cardValue) {
+Vote.prototype.save = function (cardValue, onSuccess) {
   var that = this;
 
   Db.Votes.put({
@@ -36,6 +36,7 @@ Vote.prototype.save = function (cardValue) {
   }).then(function (response) {
     that.rev = response.rev;
     that.id = response.id;
+    if (onSuccess) onSuccess();
 
   }).catch(function (err) {
     console.log(err);

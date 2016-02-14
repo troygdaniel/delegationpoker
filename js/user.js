@@ -6,9 +6,9 @@ window.User =  function User(options){
   }
 };
 
-User.prototype.vote = function (scenario, _cardValue) {
+User.prototype.vote = function (scenario, _cardValue, onSuccess) {
   if (this.hasAuthenticated() === true) {
-    return new Vote({user:this, scenario:scenario, cardValue: _cardValue});  
+    return new Vote({user:this, scenario:scenario, cardValue: _cardValue}, onSuccess);  
   } else {
     return false;
   }

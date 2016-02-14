@@ -7,7 +7,7 @@ window.TestCases = function () {
   TestCases.bruce = new User({username:"bruce_" + Date.now().toString(), fullname: "Bruce Lee"});
   TestCases.bruce_vote1 = {};
   TestCases.bruce_vote2 = {};
-  TestCases.troy = new User({username:"troygdaniel" + Date.now().toString(), fullname: "Troy Daniel"});
+  TestCases.troy = new User({username:"troygdaniel" + Date.now().toString(), fullname: "Troy George Daniel"});
   TestCases.troy_scenario = new Scenario({user: TestCases.troy, name: "Hiring a new employee"});
 
   setTimeout(this.test1,100);
@@ -104,12 +104,12 @@ window.TestCases.prototype.test10 = function () {
 
 window.TestCases.prototype.test11 = function () {
   // console.log("TEST 11: Get all votes for Troy");
-  console.log(TestCases.troy_scenario.votes());
+  console.log(TestCases.troy_scenario.votes;
 }
 
 window.TestCases.prototype.test12 = function () {
   // console.log("TEST 12: Get all votes for Jiddu");
-  console.log(TestCases.jiddu_scenario.votes());
+  console.log(TestCases.jiddu_scenario.votes;
 }
 
 window.TestCases.prototype.test13 = function () {

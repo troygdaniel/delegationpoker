@@ -1,0 +1,13 @@
+## votes -> _design/1 -> scenarios
+function(doc) {
+  if (doc.scenario && doc.user) {
+    emit(doc.scenario.id, {card_value: doc.card_value, username: doc.user.username, fullname: doc.user.fullname});
+  }
+}
+
+## users -> _design/1 -> auth
+function(doc) {
+    if (doc.username && doc.password) {
+      emit(doc.password, {username: doc.username, fullname:doc.fullname, rev: doc._rev});
+    }
+}

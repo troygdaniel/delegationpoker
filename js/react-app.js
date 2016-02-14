@@ -114,6 +114,7 @@ Session.ScenarioView = React.createClass({
           alert("Scenario updated.");
         });        
       } else {
+        this.setState({scenarioName: Session.scenario.name});
         alert("You are not authorized to edit someone elses scenario.")
       }
 
@@ -144,7 +145,7 @@ Session.ScenarioView = React.createClass({
      if (Session.scenario.votes) {
       for (var i = 0; i < Session.scenario.votes.length; i++) {
         var vote = Session.scenario.votes[i];
-        rows.push( <div>{vote.value.username} = {vote.value.card_value}</div> );
+        rows.push( <div key={vote.id}>{vote.value.username} = {vote.value.card_value}</div> );
       }
       return (
         <div>{rows}</div>
@@ -159,16 +160,17 @@ Session.ScenarioView = React.createClass({
       <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>      
       <input onClick={this.handleSubmit} type="submit" value="Save"/>
       </form>      
-      <Session.PlaceVoteView/>
+      <Session.AllVotesView onVoteSubmit={this.fetchScenario}/>
       <strong>Votes</strong> 
       {this.votes()}
-      </div>
+      <button onClick={this.fetchScenario}>Refresh votes</button>
+      </div>      
     );
   }
 });
 
-// PlaceVoteView
-Session.PlaceVoteView = React.createClass({
+// AllVotesView
+Session.AllVotesView = React.createClass({
 
   getInitialState: function () {
     return { data: [] };
@@ -181,10 +183,11 @@ Session.PlaceVoteView = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault(); 
     if (!this.state.cardValue || typeof Session.user === "undefined" || typeof Session.scenario === "undefined") { return; }
-    if (Session.user.vote(Session.scenario, this.state.cardValue) === false) {
+
+    if (Session.user.vote(Session.scenario, this.state.cardValue, this.props.onVoteSubmit) === false) {
       alert("Please sign in before voting.");
     } else {
-      alert("Vote saved.");
+      alert("Vote saved.");      
     }
   },
 
