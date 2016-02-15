@@ -43,9 +43,9 @@ User.prototype.signon = function(password, callback) {
   $.getJSON(endpoint, function( results ) {
     if (that.didFindMatchingUser(results)) {
       that.setCookie(that.username, password);
-      if (callback) callback(results);
+      if (callback) callback(that);
     } else {
-      if (callback) callback(results);
+      if (callback) callback(that);
     }
   });
 
