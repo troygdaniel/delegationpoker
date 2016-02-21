@@ -18,6 +18,8 @@ Session.UserView = React.createClass({
         window.location = "signin.html#"+Session.scenarioId;
       } else {
         $(".user-profile-info").html("You are signed in as "+Session.user.fullname);
+        that.setState({user: user});
+        that.user = user;
         that.setState({username: Session.user.username});
         that.setState({fullname: Session.user.fullname});
         that.setState({password: Cookies.get("password")});
@@ -27,8 +29,8 @@ Session.UserView = React.createClass({
 
   render: function () {
     return (
-      <div className="user-view">        
-        <Session.ScenarioView scenario={Session.scenario}/>
+      <div className="user-view">
+        <Session.ScenarioView/>
       </div>
     );
   }
@@ -43,39 +45,45 @@ Session.ScenarioView = React.createClass({
   },
 
   handleScenarioName: function(e) {
-    this.setState({scenarioName: e.target.value});
+    if (typeof Session.scenario.rev === "undefined") {
+      this.setState({scenarioName: e.target.value});
+    } else if (Session.user.username === Session.scenario.user.username) {
+      this.setState({scenarioName: e.target.value});
+    } else {
+      errorMessage("Sorry, only the owner can edit the scenario.");
+    }
   },
 
   handleSubmit: function(e) {
-    e.preventDefault(); 
+    e.preventDefault();
     if (Session.user.hasAuthenticated() === false) {
-      alert("You must be signed in to create a scenario.");
+      errorMessage("You must be signed in to create a scenario.");
       return;
     }
-    if (!this.state.scenarioName) { 
-      alert("Please provide a scenario name.");
-      return; 
+    debugger
+    if (!this.state.scenarioName) {
+      errorMessage("Please provide a scenario name.");
+      return;
     }
     if (typeof Session.scenario.rev === "undefined") {
       Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
       Session.scenario.save(function() {
-        alert("Saved Scenario.");
-        window.location.href="#"+Session.scenario.id;
+        prompt("Copy and paste this link to play with others", window.location.href+"#"+Session.scenario.id);
+        window.location.href="?reload="+Date.now()+"#"+Session.scenario.id;
       });
-      window.location.href="#"+Session.scenario.id;
-
+      if (typeof Session.scenario.rev != "undefined") {
+        window.location.href="#"+Session.scenario.id;
+      }
     } else {
       if (Session.user.username === Session.scenario.user.username) {
         Session.scenario.name = this.state.scenarioName;
         Session.scenario.update(function (doc){
           window.location.href="#"+Session.scenario.id;
-          alert("Scenario updated.");
-        });        
+          infoMessage("Scenario updated.");
+        });
       } else {
         this.setState({scenarioName: Session.scenario.name});
-        alert("You are not authorized to edit someone elses scenario.")
       }
-
     }
   },
 
@@ -88,13 +96,34 @@ Session.ScenarioView = React.createClass({
     // Fetch the scenario given a query string
     if (Session.scenarioId) {
       Session.scenario.get(Session.scenarioId, function (doc) {
-        if (doc.error) { 
-          console.error("Scenario '"+Session.scenarioId+"' not found."); 
+        if (doc.error) {
+          console.error("Scenario '"+Session.scenarioId+"' not found.");
         } else {
           that.setState({scenarioName: Session.scenario.name});
           that.setState({votes: Session.scenario.votes});
         }
       });
+    }
+  },
+  showCreateButton: function () {
+    if (typeof Session.scenario.rev === "undefined") {
+      return (<input className="save-button" onClick={this.handleSubmit} type="submit" value="Create"/>)
+    } else {
+      return;
+    }
+  },
+
+  showVoting: function () {
+    if (typeof Session.scenario.rev !== "undefined") {
+      return (
+        <div>
+        <Session.CastVoteView onVoteSubmit={this.fetchScenario}/>
+        {this.votes()}
+        <button onClick={this.fetchScenario}>Get latest votes</button>
+        </div>
+      )
+    } else {
+      return;
     }
   },
 
@@ -103,11 +132,19 @@ Session.ScenarioView = React.createClass({
      if (Session.scenario.votes) {
       for (var i = 0; i < Session.scenario.votes.length; i++) {
         var vote = Session.scenario.votes[i];
-        rows.push( <div key={vote.id}>{vote.value.username} = {vote.value.card_value}</div> );
+        rows.push( <tr key={vote.id}><td>{vote.value.fullname} </td><td>{vote.value.card_value} - {Card[vote.value.card_value]}</td></tr> );
       }
       return (
-        <div>{rows}</div>
-      );      
+        <table>
+        <thead>
+          <tr>
+            <th>Player Name</th>
+            <th>Selected Card</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+      );
     }
   },
 
@@ -115,52 +152,56 @@ Session.ScenarioView = React.createClass({
     return (
       <div className="scenario-view">
       <form className="scenarioForm" onSubmit={this.handleSubmit}>
-      <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>      
-      <input onClick={this.handleSubmit} type="submit" value="Save"/>
-      </form>      
-      <Session.AllVotesView onVoteSubmit={this.fetchScenario}/>
-      <strong>Votes</strong> 
-      {this.votes()}
-      <button onClick={this.fetchScenario}>Get latest votes</button>
-      </div>      
+      <span id="info-message">&nbsp;</span>
+      <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>
+      {this.showCreateButton()}
+      </form>
+      {this.showVoting()}
+      </div>
     );
   }
 });
 
-// AllVotesView
-Session.AllVotesView = React.createClass({
+// CastVoteView
+Session.CastVoteView = React.createClass({
 
   getInitialState: function () {
     return { data: [] };
-  },
-
-  handleCardValue: function(e) {
-    this.setState({cardValue: e.target.value});
-  },
-
-  handleSubmit: function(e) {
-    e.preventDefault(); 
-    if (!this.state.cardValue || typeof Session.user === "undefined" || typeof Session.scenario === "undefined") { return; }
-
-    if (Session.user.vote(Session.scenario, this.state.cardValue, this.props.onVoteSubmit) === false) {
-      alert("Please sign in before voting.");
-    } else {
-      alert("Vote saved.");      
-    }
   },
 
   componentDidMount: function () {
     setInterval(this.props.onVoteSubmit,30000)
   },
 
+  handleVote: function (e) {
+    var $target = $(e.target);
+    var vote_value = $target.data("value");
+    $(".button").removeClass("special");
+    $target.addClass("special");
+    this.setState({cardValue: vote_value});
+
+    if (!vote_value || typeof Session.user === "undefined" || typeof Session.scenario === "undefined") { return; }
+
+    if (Session.user.vote(Session.scenario, vote_value, this.props.onVoteSubmit) === false) {
+      errorMessage("Please sign in before voting.");
+    } else {
+      infoMessage("Vote saved.");
+    }
+  },
+
   render: function () {
     return (
-      <div className="vote-view">
-        <form className="voteForm" onSubmit={this.handleSubmit}>
-        <input type="text" placeholder="Value 1-7" value={this.state.cardValue} onChange={this.handleCardValue}/>      
-        <input onClick={this.handleSubmit} type="submit" value="Vote"/>
-        </form>
-      </div>
+      <section>
+        <ul className="actions small">
+          <li><a data-value="1" onClick={this.handleVote} className="button small fit">1 - Tell</a></li>
+          <li><a data-value="2" onClick={this.handleVote} className="button small fit">2 - Sell</a></li>
+          <li><a data-value="3" onClick={this.handleVote} className="button small fit">3 - Consult</a></li>
+          <li><a data-value="4" onClick={this.handleVote} className="button small fit">4 - Agree</a></li>
+          <li><a data-value="5" onClick={this.handleVote} className="button small fit">5 - Advise</a></li>
+          <li><a data-value="6" onClick={this.handleVote} className="button small fit">6 - Inquire</a></li>
+          <li><a data-value="7" onClick={this.handleVote} className="button small fit">7 - Delegate</a></li>
+        </ul>
+      </section>
     );
   }
 });

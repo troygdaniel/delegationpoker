@@ -23,3 +23,21 @@ if (window.location.hash.substr(1)) {
   }
 }
 console.log("location.href = " + hashId);
+
+function infoMessage (t) {
+  $("#info-message").css('color','blue');
+  setMessage(t);
+}
+function errorMessage (t) {
+  $("#info-message").css('color','red');
+  setMessage(t);
+}
+function setMessage (t) {
+  $("#info-message").text(t);
+  setTimeout(clearInfo,1200);
+}
+
+function clearInfo() {
+  console.log("clearInfo");
+  $("#info-message").removeAttr('style');
+}
