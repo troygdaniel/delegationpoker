@@ -9,6 +9,7 @@ Session.UserView = React.createClass({
 
   componentDidMount: function() {
     this.fetchUser();
+    this.showSigninFields = true;
   },
 
   fetchUser: function () {
@@ -24,6 +25,7 @@ Session.UserView = React.createClass({
   },
 
   handleSignOn: function (e) {
+    console.log("handleSignOn");
     if (e) { e.preventDefault(); }
     if (!this.state.username || !this.state.password ) { return; }
     var that = this;
@@ -40,6 +42,12 @@ Session.UserView = React.createClass({
   },
 
   handleRegister: function (e){
+    console.log("handleRegister");
+    if (this.showSigninFields === true) {
+      this.handleSignOn(e);
+      return;
+    }
+
     e.preventDefault();
     if (!this.state.username || !this.state.password ) { return; }
     Session.user.register(this.state.password.trim(), function () {
@@ -66,15 +74,49 @@ Session.UserView = React.createClass({
     this.setState({fullname: e.target.value});
   },
 
+  showSigninFieldsAction: function () {
+    $(".signin-fields").show();
+    $(".register-fields").hide();
+    this.showSigninFields = true;
+  },
+
+  showRegisterFieldsAction: function()  {
+    $(".signin-fields").hide();
+    $(".register-fields").show();
+    this.showSigninFields = false;
+  },
+
+  logoutAction: function () {
+    Cookies.remove('username');
+    Cookies.remove('password');
+    window.location = "signin.html";
+  },
+
+  handleSubmit: function (e) {
+    if (this.showSigninFields === false) {
+      this.handleRegister(e);
+    } else {
+      this.handleSignOn(e);
+    }
+  },
+
+
   render: function () {
     return (
       <div className="user-view">
-        <form className="scenarioForm" onSubmit={this.handleSignOn}>
-          <input type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/>
-          <input type="password" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/>
-          <input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/>
-          <input type="submit" onClick={this.handleSignOn} name="action" value="Sign in"/>
-          <input type="submit" onClick={this.handleRegister} name="action" value="Register"/>
+        <form className="scenarioForm" onSubmit={this.handleSubmit}>
+          <span className="register-fields signin-fields"><input type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/></span>
+          <span className="register-fields signin-fields"><input type="password" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/></span>
+          <span className="register-fields hidden" id="full-name"><input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/></span>
+          <br/>
+          <span className="signin-fields"> <a className="button small" onClick={this.handleSignOn} name="action">Sign in</a></span>
+          &nbsp;
+          <span className="signin-fields"><a className="button small alt" onClick={this.logoutAction}>Logout</a></span>
+          <span className="signin-fields"><br/><br/><a onClick={this.showRegisterFieldsAction}>I need to create an account.</a></span>
+          <br/>
+          <span id="register-button" className="register-fields hidden"><input type="submit" onClick={this.handleRegister} name="action" value="Register"/></span>
+          <br/>
+          <span className="signin-fields hidden register-fields"><br/><a onClick={this.showSigninFieldsAction}>I have an account, let me sign in.</a></span>
         </form>
       </div>
     );
