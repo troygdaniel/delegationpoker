@@ -15,7 +15,13 @@ Session.UserView = React.createClass({
     var that = this;
     Session.user.fetchFromCookie(function(user) {
       if (user.hasAuthenticated() === false) {
-        window.location = "signin.html#"+Session.scenarioId;
+        console.log(Session.scenarioId);
+        if (typeof Session.scenarioId === "undefined") {
+          window.location = "signin.html";
+        } else {
+          // window.location = "signin.html#"+Session.scenarioId;
+        }
+
       } else {
         $(".user-profile-info").html(Session.user.fullname);
         that.setState({user: user});
