@@ -60,7 +60,6 @@ Session.ScenarioView = React.createClass({
       errorMessage("You must be signed in to create a scenario.");
       return;
     }
-    debugger
     if (!this.state.scenarioName) {
       errorMessage("Please provide a scenario name.");
       return;
@@ -107,7 +106,7 @@ Session.ScenarioView = React.createClass({
   },
   showCreateButton: function () {
     if (typeof Session.scenario.rev === "undefined") {
-      return (<input className="save-button" onClick={this.handleSubmit} type="submit" value="Create"/>)
+      return (<span><br/><input className="save-button" onClick={this.handleSubmit} type="submit" value="Create"/></span>)
     } else {
       return;
     }
