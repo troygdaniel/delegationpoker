@@ -17,7 +17,7 @@ Session.UserView = React.createClass({
       if (user.hasAuthenticated() === false) {
         window.location = "signin.html#"+Session.scenarioId;
       } else {
-        $(".user-profile-info").html("You are signed in as "+Session.user.fullname);
+        $(".user-profile-info").html(Session.user.fullname);
         that.setState({user: user});
         that.user = user;
         that.setState({username: Session.user.username});
@@ -112,14 +112,26 @@ Session.ScenarioView = React.createClass({
       return;
     }
   },
+  toggleAllVotes: function (argument) {
+    this.fetchScenario();
+    $("#all-votes").toggle();
+    if (this.areVotesVisible === true) {
+      this.areVotesVisible = false;
+      $("#toggle-cards-button").text("Show all Cards");
+    } else {
+      this.areVotesVisible = true;
+      $("#toggle-cards-button").text("Hide all Cards");
+    }
+  },
 
   showVoting: function () {
     if (typeof Session.scenario.rev !== "undefined") {
       return (
         <div>
         <Session.CastVoteView onVoteSubmit={this.fetchScenario}/>
+        <a id="toggle-cards-button" className="button alt small" onClick={this.toggleAllVotes}>Show all cards</a>
+        <br/><br/>
         {this.votes()}
-        <button onClick={this.fetchScenario}>Get latest votes</button>
         </div>
       )
     } else {
@@ -135,6 +147,7 @@ Session.ScenarioView = React.createClass({
         rows.push( <tr key={vote.id}><td>{vote.value.fullname} </td><td>{vote.value.card_value} - {Card[vote.value.card_value]}</td></tr> );
       }
       return (
+        <div id="all-votes" className="hidden">
         <table>
         <thead>
           <tr>
@@ -144,6 +157,7 @@ Session.ScenarioView = React.createClass({
         </thead>
         <tbody>{rows}</tbody>
       </table>
+      </div>
       );
     }
   },

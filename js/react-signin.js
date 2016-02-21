@@ -15,7 +15,7 @@ Session.UserView = React.createClass({
     var that = this;
     Session.user.fetchFromCookie(function(user) {
       if (user.hasAuthenticated() === true) {
-        $(".user-profile-info").html("You are signed in as "+Session.user.fullname);
+        $(".user-profile-info").html(Session.user.fullname);
       }
       that.setState({username: Session.user.username});
       that.setState({fullname: Session.user.fullname});
@@ -27,13 +27,15 @@ Session.UserView = React.createClass({
     if (e) { e.preventDefault(); }
     if (!this.state.username || !this.state.password ) { return; }
     var that = this;
-    Session.user.signon(this.state.password.trim(), function(results){      
+    Session.user.signon(this.state.password.trim(), function(results){
       if (Session.user.hasAuthenticated() === true) {
-        alert("Sign in success.");  
-        window.location = "play.html#"+Session.scenarioId;        
+        alert("Sign in success.");
+        if (typeof Session.scenarioId != "undefined") {
+          window.location = "play.html#"+Session.scenarioId;
+        }
       } else {
-        alert("Failed to sign in.");  
-      }    
+        alert("Failed to sign in.");
+      }
     });
   },
 
@@ -60,7 +62,7 @@ Session.UserView = React.createClass({
   },
 
   handleFullname: function(e) {
-    Session.user.fullname = e.target.value;    
+    Session.user.fullname = e.target.value;
     this.setState({fullname: e.target.value});
   },
 
@@ -68,9 +70,9 @@ Session.UserView = React.createClass({
     return (
       <div className="user-view">
         <form className="scenarioForm" onSubmit={this.handleSignOn}>
-          <input type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/>      
-          <input type="password" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/>      
-          <input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/>      
+          <input type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/>
+          <input type="password" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/>
+          <input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/>
           <input type="submit" onClick={this.handleSignOn} name="action" value="Sign in"/>
           <input type="submit" onClick={this.handleRegister} name="action" value="Register"/>
         </form>
