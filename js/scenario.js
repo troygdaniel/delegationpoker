@@ -64,9 +64,6 @@ Scenario.prototype.get = function (id, callback) {
   });
 }
 
-Scenario.prototype.shareableLink = function() {
-};
-
 Scenario.prototype.remove = function () {
   return Db.Scenarios.remove(this.id, this.rev);
 }

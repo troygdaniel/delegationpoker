@@ -10,25 +10,15 @@ Session.UserView = React.createClass({
   componentDidMount: function() {
     this.fetchUser();
   },
-
   fetchUser: function () {
     var that = this;
     Session.user.fetchFromCookie(function(user) {
       if (user.hasAuthenticated() === false) {
-        console.log(Session.scenarioId);
-        if (typeof Session.scenarioId === "undefined") {
-          window.location = "signin.html";
-        } else {
-          // window.location = "signin.html#"+Session.scenarioId;
-        }
-
+        window.location = "signin.html#"+Session.scenarioId;
       } else {
         $(".user-profile-info").html(Session.user.fullname);
         that.setState({user: user});
         that.user = user;
-        that.setState({username: Session.user.username});
-        that.setState({fullname: Session.user.fullname});
-        that.setState({password: Cookies.get("password")});
       }
     });
   },
@@ -56,25 +46,26 @@ Session.ScenarioView = React.createClass({
     } else if (Session.user.username === Session.scenario.user.username) {
       this.setState({scenarioName: e.target.value});
     } else {
-      errorMessage("Sorry, only the owner can edit the scenario.");
+      App.errorMessage("Sorry, only the owner can edit the scenario.");
     }
   },
 
   handleSubmit: function(e) {
     e.preventDefault();
     if (Session.user.hasAuthenticated() === false) {
-      errorMessage("You must be signed in to create a scenario.");
+      App.errorMessage("You must be signed in to create a scenario.");
       return;
     }
     if (!this.state.scenarioName) {
-      errorMessage("Please provide a scenario name.");
+      App.errorMessage("Please provide a scenario name.");
       return;
     }
+    // TODO: remove checking for scenario id - move to App
     if (typeof Session.scenario.rev === "undefined") {
       Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
       Session.scenario.save(function() {
-        prompt("Copy and paste this link to play with others", window.location.href+"#"+Session.scenario.id);
-        window.location.href="?reload="+Date.now()+"#"+Session.scenario.id;
+        prompt("Copy and paste this link to play with others", App.shareableLink());
+        window.location.href = App.shareableLink(true);
       });
       if (typeof Session.scenario.rev != "undefined") {
         window.location.href="#"+Session.scenario.id;
@@ -84,7 +75,7 @@ Session.ScenarioView = React.createClass({
         Session.scenario.name = this.state.scenarioName;
         Session.scenario.update(function (doc){
           window.location.href="#"+Session.scenario.id;
-          infoMessage("Scenario updated.");
+          App.infoMessage("Scenario updated.");
         });
       } else {
         this.setState({scenarioName: Session.scenario.name});
@@ -202,9 +193,9 @@ Session.CastVoteView = React.createClass({
     if (!vote_value || typeof Session.user === "undefined" || typeof Session.scenario === "undefined") { return; }
 
     if (Session.user.vote(Session.scenario, vote_value, this.props.onVoteSubmit) === false) {
-      errorMessage("Please sign in before voting.");
+      App.errorMessage("Please sign in before voting.");
     } else {
-      infoMessage("Vote saved.");
+      App.infoMessage("Vote saved.");
     }
   },
 

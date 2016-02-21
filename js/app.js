@@ -1,5 +1,4 @@
 var pouchServer = "localhost";
-window.App = {};
 window.Session = {};
 window.Db = {}
 window.Db.Users = {};
@@ -15,6 +14,7 @@ window.VOTES_END_POINT = "http://"+pouchServer+":5984/votes/_design/1/_view/scen
 
 Session.scenario = new Scenario();
 Session.user = new User();
+Session.scenarioId = "";
 
 // Grab the Scenario ID from the query string
 if (window.location.hash.substr(1)) {
@@ -23,22 +23,35 @@ if (window.location.hash.substr(1)) {
     Session.scenarioId = hashId;
   }
 }
-console.log("location.href = " + hashId);
 
-function infoMessage (t) {
+window.App =  {};
+
+App.shareableLink = function (shouldReload) {
+  var baseURL = window.location.href;
+  if (baseURL.slice(-1) === "#") {
+    baseURL = baseURL.substr(0,baseURL.length-1);
+  }
+  if (shouldReload === true) {
+    return baseURL+"?reload="+Date.now()+"#"+Session.scenario.id;
+  } else {
+    return baseURL+"#"+Session.scenario.id;
+  }
+}
+
+App.infoMessage = function(t) {
   $("#info-message").css('color','blue');
-  setMessage(t);
+  App.setMessage(t);
 }
-function errorMessage (t) {
+App.errorMessage = function(t) {
   $("#info-message").css('color','red');
-  setMessage(t);
+  App.setMessage(t);
 }
-function setMessage (t) {
+App.setMessage = function(t) {
   $("#info-message").text(t);
-  setTimeout(clearInfo,1200);
+  setTimeout(App.clearInfo,1200);
 }
 
-function clearInfo() {
+App.clearInfo = function() {
   console.log("clearInfo");
   $("#info-message").removeAttr('style');
 }
