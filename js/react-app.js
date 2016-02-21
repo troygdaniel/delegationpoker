@@ -10,6 +10,7 @@ Session.UserView = React.createClass({
   componentDidMount: function() {
     this.fetchUser();
   },
+
   fetchUser: function () {
     var that = this;
     Session.user.fetchFromCookie(function(user) {
@@ -17,8 +18,6 @@ Session.UserView = React.createClass({
         window.location = "signin.html#"+Session.scenarioId;
       } else {
         $(".user-profile-info").html(Session.user.fullname);
-        that.setState({user: user});
-        that.user = user;
       }
     });
   },
@@ -30,7 +29,6 @@ Session.UserView = React.createClass({
       </div>
     );
   }
-
 });
 
 // ScenarioView
@@ -41,44 +39,32 @@ Session.ScenarioView = React.createClass({
   },
 
   handleScenarioName: function(e) {
-    if (typeof Session.scenario.rev === "undefined") {
-      this.setState({scenarioName: e.target.value});
-    } else if (Session.user.username === Session.scenario.user.username) {
+    if (App.isNewScenario() === true || App.userHasCreatedScenario() === true) {
       this.setState({scenarioName: e.target.value});
     } else {
       App.errorMessage("Sorry, only the owner can edit the scenario.");
     }
   },
 
-  handleSubmit: function(e) {
-    e.preventDefault();
+  hasValidationErrors: function () {
     if (Session.user.hasAuthenticated() === false) {
-      App.errorMessage("You must be signed in to create a scenario.");
-      return;
+      return App.errorMessage("You must be signed in to create a scenario.");
     }
     if (!this.state.scenarioName) {
-      App.errorMessage("Please provide a scenario name.");
-      return;
+      return App.errorMessage("Please provide a scenario name.");
     }
-    // TODO: remove checking for scenario id - move to App
-    if (typeof Session.scenario.rev === "undefined") {
-      Session.scenario = new Scenario({user: Session.user, name: this.state.scenarioName});
-      Session.scenario.save(function() {
-        prompt("Copy and paste this link to play with others", App.shareableLink());
-        window.location.href = App.shareableLink(true);
-      });
-      if (typeof Session.scenario.rev != "undefined") {
-        window.location.href="#"+Session.scenario.id;
-      }
+    return false;
+  },
+
+  handleScenarioSubmit: function(e) {
+    e.preventDefault();
+    if (this.hasValidationErrors() === true) { return; }
+
+    if (App.isNewScenario() === true) {
+      App.saveScenario(Session.user, this.state.scenarioName);
     } else {
-      if (Session.user.username === Session.scenario.user.username) {
-        Session.scenario.name = this.state.scenarioName;
-        Session.scenario.update(function (doc){
-          window.location.href="#"+Session.scenario.id;
-          App.infoMessage("Scenario updated.");
-        });
-      } else {
-        this.setState({scenarioName: Session.scenario.name});
+      if (App.userHasCreatedScenario() === true) {
+        App.updateScenario(this.state.scenarioName);
       }
     }
   },
@@ -93,7 +79,7 @@ Session.ScenarioView = React.createClass({
     if (Session.scenarioId) {
       Session.scenario.get(Session.scenarioId, function (doc) {
         if (doc.error) {
-          console.error("Scenario '"+Session.scenarioId+"' not found.");
+          App.errorMessage("Scenario was not found.");
         } else {
           that.setState({scenarioName: Session.scenario.name});
           that.setState({votes: Session.scenario.votes});
@@ -101,13 +87,15 @@ Session.ScenarioView = React.createClass({
       });
     }
   },
+
   showCreateButton: function () {
-    if (typeof Session.scenario.rev === "undefined") {
-      return (<span><br/><input className="save-button" onClick={this.handleSubmit} type="submit" value="Create"/></span>)
+    if (App.isNewScenario() === true) {
+      return (<span><br/><input className="save-button" onClick={this.handleScenarioSubmit} type="submit" value="Create New Scenario"/></span>)
     } else {
       return;
     }
   },
+
   toggleAllVotes: function (argument) {
     this.fetchScenario();
     $("#all-votes").toggle();
@@ -121,13 +109,13 @@ Session.ScenarioView = React.createClass({
   },
 
   showVoting: function () {
-    if (typeof Session.scenario.rev !== "undefined") {
+    if (App.isNewScenario() === false) {
       return (
         <div>
-        <Session.CastVoteView onVoteSubmit={this.fetchScenario}/>
-        <a id="toggle-cards-button" className="button alt small" onClick={this.toggleAllVotes}>Show all cards</a>
-        <br/><br/>
-        {this.votes()}
+          <Session.CastVoteView onVoteSubmit={this.fetchScenario}/>
+          <a id="toggle-cards-button" className="button alt small" onClick={this.toggleAllVotes}>Show all cards</a>
+          <br/><br/>
+          {this.votes()}
         </div>
       )
     } else {
@@ -161,12 +149,12 @@ Session.ScenarioView = React.createClass({
   render: function () {
     return (
       <div className="scenario-view">
-      <form className="scenarioForm" onSubmit={this.handleSubmit}>
-      <span id="info-message">&nbsp;</span>
-      <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>
-      {this.showCreateButton()}
-      </form>
-      {this.showVoting()}
+        <form className="scenarioForm" onSubmit={this.handleScenarioSubmit}>
+          <span id="info-message">&nbsp;</span>
+          <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>
+          {this.showCreateButton()}
+        </form>
+        {this.showVoting()}
       </div>
     );
   }

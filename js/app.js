@@ -38,17 +38,48 @@ App.shareableLink = function (shouldReload) {
   }
 }
 
+// TODO: Consider placing below methods in a more appropraite place (Scenario?)
+//        Possibly renaming App to AppUtil?
 App.infoMessage = function(t) {
   $("#info-message").css('color','blue');
   App.setMessage(t);
 }
+
 App.errorMessage = function(t) {
   $("#info-message").css('color','red');
   App.setMessage(t);
+  return true;
 }
+
 App.setMessage = function(t) {
   $("#info-message").text(t);
   setTimeout(App.clearInfo,1200);
+}
+
+App.userHasCreatedScenario = function () {
+  return (Session.user.username === Session.scenario.user.username);
+}
+
+// TODO: Consider removing either Session or App
+//       (redundancy with Session and App)
+App.saveScenario = function (user, scenarioName) {
+  Session.scenario = new Scenario({user: user, name: scenarioName});
+
+  Session.scenario.save(function() {
+    prompt("Copy and paste this link to play with others", App.shareableLink());
+    window.location.href = App.shareableLink(true);
+  });
+}
+
+App.updateScenario = function (scenarioName) {
+  Session.scenario.name = scenarioName;
+  Session.scenario.update(function (doc) {
+    App.infoMessage("Scenario updated.");
+  });
+}
+
+App.isNewScenario = function () {
+  return (typeof Session.scenario.rev === "undefined");
 }
 
 App.clearInfo = function() {
