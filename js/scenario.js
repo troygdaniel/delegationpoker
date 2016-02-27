@@ -56,7 +56,7 @@ Scenario.prototype.get = function (id, callback) {
     console.log(VOTES_END_POINT +"%22"+that.id+"%22");
     $.getJSON(VOTES_END_POINT +"%22"+that.id+"%22", function( results ) {
       that.votes = results.rows;
-      if (callback) callback(results);
+      if (callback) callback(that);
     });
 
   }).catch(function (err) {
@@ -66,4 +66,8 @@ Scenario.prototype.get = function (id, callback) {
 
 Scenario.prototype.remove = function () {
   return Db.Scenarios.remove(this.id, this.rev);
+}
+
+Scenario.prototype.isNew = function () {
+  return (typeof this.rev === "undefined");
 }
