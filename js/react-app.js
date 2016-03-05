@@ -3,30 +3,31 @@
 // UserView
 var UserView = React.createClass({
 
-  getInitialState: function () {    
+  getInitialState: function () {
     return { data: [] };
   },
 
-  componentDidMount: function() {    
+  componentDidMount: function() {
+    // TODO: get rid of Session.scenarioId
     this.setState({scenarioId: Session.scenarioId});
     this.fetchUser();
   },
 
   fetchUser: function () {
     var that = this;
-    var _user = new User();    
+    var _user = new User();
     _user.fetchFromCookie(function(u) {
       that.setState({user: u});
       if (u.hasAuthenticated() === false) {
         window.location = "signin.html#"+that.state.scenarioId;
       } else {
-        // BAD - should be rendered
+        // Icky - should be rendered
         $(".user-profile-info").html(u.fullname);
       }
     });
   },
 
-  render: function () {    
+  render: function () {
     return (
       <div className="user-view">
         <ScenarioView user={this.state.user} scenarioId={Session.scenarioId} ></ScenarioView>
@@ -38,15 +39,20 @@ var UserView = React.createClass({
 // ScenarioView
 var ScenarioView = React.createClass({
 
-  getInitialState: function () {    
+  getInitialState: function () {
     var s = new Scenario();
     return { scenarioName: "", scenario: s };
   },
 
+  userCreatedScenario: function () {
+    return (this.state.scenario.wasCreatedBy(this.props.user));
+  },
+
   handleScenarioName: function(e) {
-    if (App.isNewScenario() === true || App.userHasCreatedScenario() === true) {
+    if (this.state.scenario.isNew() || this.userCreatedScenario()) {
       this.setState({scenarioName: e.target.value});
     } else {
+      // TODO: move this into the render?
       App.errorMessage("Sorry, only the owner can edit the scenario.");
     }
   },
@@ -61,26 +67,46 @@ var ScenarioView = React.createClass({
     return false;
   },
 
+  saveScenario: function () {
+    var that = this;
+
+    this.state.scenario.user =  this.props.user;
+    // TODO: bind directly to state.scenario.name (not this.state.scenarioName)
+    this.state.scenario.name = this.state.scenarioName;
+    this.state.scenario.save(function() {
+      prompt("Copy and paste this link to play with others", that.state.scenario.shareableLink());
+      window.location.href = that.state.scenario.shareableLink(true);
+    });
+  },
+
+  updateScenario: function () {
+    this.state.scenario.name = this.state.scenarioName;
+    this.state.scenario.update(function (doc) {
+      App.infoMessage("Scenario updated.");
+    });
+  },
+
   // TODO: consider moving this out to App
   handleScenarioSubmit: function(e) {
     e.preventDefault();
+    // TODO: move this into the render
     if (this.hasValidationErrors() === true) { return; }
 
-    if (App.isNewScenario() === true) {
-      App.saveScenario(this.props.user, this.state.scenarioName);
+    if (this.state.scenario.isNew() === true) {
+      this.saveScenario()
     } else {
-      if (App.userHasCreatedScenario() === true) {
-        App.updateScenario(this.state.scenarioName);
+      if (this.userCreatedScenario()) {
+        this.updateScenario();
       }
     }
   },
 
-  componentDidMount: function() {    
+  componentDidMount: function() {
     this.fetchScenario();
   },
 
   // TODO: consider moving this out Scenario
-  fetchScenario: function () {    
+  fetchScenario: function () {
     var that = this;
     var _scenario = new Scenario();
     // Fetch the scenario given a query string
@@ -108,15 +134,19 @@ var ScenarioView = React.createClass({
   },
 
   toggleAllVotes: function (argument) {
+    var labelText = "Hide";
     this.fetchScenario();
-    $("#all-votes").toggle();
+
     if (this.areVotesVisible === true) {
       this.areVotesVisible = false;
-      $("#toggle-cards-button").text("Show all Cards");
+      labelText = "Show";
     } else {
       this.areVotesVisible = true;
-      $("#toggle-cards-button").text("Hide all Cards");
     }
+    $("#all-votes").toggle();
+
+    // TODO: move this in render
+    $("#toggle-cards-button").text(labelText +" all Cards");
   },
 
   showVoting: function () {
@@ -157,7 +187,7 @@ var ScenarioView = React.createClass({
     }
   },
 
-  render: function () {    
+  render: function () {
     return (
       <div className="scenario-view">
         <form className="scenarioForm" onSubmit={this.handleScenarioSubmit}>

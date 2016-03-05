@@ -64,10 +64,26 @@ Scenario.prototype.get = function (id, callback) {
   });
 }
 
+Scenario.prototype.shareableLink = function (shouldReload) {
+  var baseURL = window.location.href;
+  if (baseURL.slice(-1) === "#") {
+    baseURL = baseURL.substr(0,baseURL.length-1);
+  }
+  if (shouldReload === true) {
+    return baseURL+"?reload="+Date.now()+"#"+this.id;
+  } else {
+    return baseURL+"#"+this.id;
+  }
+}
+
 Scenario.prototype.remove = function () {
   return Db.Scenarios.remove(this.id, this.rev);
 }
 
 Scenario.prototype.isNew = function () {
   return (typeof this.rev === "undefined");
+}
+
+Scenario.prototype.wasCreatedBy = function (user) {
+  return (user.username === this.user.username);
 }

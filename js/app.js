@@ -12,7 +12,6 @@ window.AUTH_END_POINT = "http://"+pouchServer+":5984/users/_design/1/_view/auth?
 window.VOTES_END_POINT = "http://"+pouchServer+":5984/votes/_design/1/_view/scenarios?key=";
 
 
-Session.scenario = new Scenario();
 Session.user = new User();
 Session.scenarioId = "";
 
@@ -26,19 +25,7 @@ if (window.location.hash.substr(1)) {
 
 window.App =  {};
 
-App.shareableLink = function (shouldReload) {
-  var baseURL = window.location.href;
-  if (baseURL.slice(-1) === "#") {
-    baseURL = baseURL.substr(0,baseURL.length-1);
-  }
-  if (shouldReload === true) {
-    return baseURL+"?reload="+Date.now()+"#"+Session.scenario.id;
-  } else {
-    return baseURL+"#"+Session.scenario.id;
-  }
-}
-
-// TODO: Consider placing below methods in a more appropraite place (Scenario?)
+// TODO: Consider placing below methods in a more appropriate place (Scenario?)
 //        Possibly renaming App to AppUtil?
 App.infoMessage = function(t) {
   $("#info-message").css('color','blue');
@@ -54,32 +41,6 @@ App.errorMessage = function(t) {
 App.setMessage = function(t) {
   $("#info-message").text(t);
   setTimeout(App.clearInfo,1200);
-}
-
-App.userHasCreatedScenario = function () {
-  return (Session.user.username === Session.scenario.user.username);
-}
-
-// TODO: Consider removing either Session or App
-//       (redundancy with Session and App)
-App.saveScenario = function (user, scenarioName) {
-  Session.scenario = new Scenario({user: user, name: scenarioName});
-
-  Session.scenario.save(function() {
-    prompt("Copy and paste this link to play with others", App.shareableLink());
-    window.location.href = App.shareableLink(true);
-  });
-}
-
-App.updateScenario = function (scenarioName) {
-  Session.scenario.name = scenarioName;
-  Session.scenario.update(function (doc) {
-    App.infoMessage("Scenario updated.");
-  });
-}
-
-App.isNewScenario = function () {
-  return (typeof Session.scenario.rev === "undefined");
 }
 
 App.clearInfo = function() {
