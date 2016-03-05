@@ -221,7 +221,7 @@ var CastVoteView = React.createClass({
 
     if (!vote_value || typeof this.props.user === "undefined") { return; }
 
-    // TODO: remove these if statements -
+    // TODO: remove these if statements - render based on state
     if (this.props.user.vote(this.props.scenario, vote_value, this.props.onVoteSubmit) === false) {
       App.errorMessage("Please sign in before voting.");
     } else {
