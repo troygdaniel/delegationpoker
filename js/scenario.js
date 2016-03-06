@@ -53,7 +53,7 @@ Scenario.prototype.get = function (id, callback) {
     that.id = doc._id;
     that.name = doc.name;
     that.user = doc.user;
-    console.log(VOTES_END_POINT +"%22"+that.id+"%22");
+
     $.getJSON(VOTES_END_POINT +"%22"+that.id+"%22", function( results ) {
       that.votes = results.rows;
       if (callback) callback(that);

@@ -2,9 +2,9 @@ var DEVELOPMENT_MODE = false;
 configurePersistence(DEVELOPMENT_MODE);
 
 function configurePersistence(DEVELOPMENT_MODE) {
-  var couchDBServer = "https://troygdaniel.cloudant.com";
+  var couchDBServer = _h.url("aHR0cHM6Ly90cm95Z2RhbmllbC5jbG91ZGFudC5jb20=");
 
-  if (DEVELOPMENT_MODE === true) couchDBServer = "http://localhost:5984";
+  if (DEVELOPMENT_MODE === true) couchDBServer = _h.url("aHR0cDovL2xvY2FsaG9zdDo1OTg0");
 
   window.Session = {};
   window.Db = {}
@@ -17,7 +17,6 @@ function configurePersistence(DEVELOPMENT_MODE) {
   window.Db.Votes = new PouchDB(couchDBServer+"/votes");
   window.AUTH_END_POINT = couchDBServer+"/users/_design/1/_view/auth?key=";
   window.VOTES_END_POINT = couchDBServer+"/votes/_design/1/_view/scenarios?key=";
-
 }
 
 Session.user = new User();
