@@ -1,16 +1,24 @@
-var pouchServer = "localhost";
-window.Session = {};
-window.Db = {}
-window.Db.Users = {};
-window.Db.Scenarios = {};
-window.Db.Votes = {};
+var DEVELOPMENT_MODE = false;
+configurePersistence(DEVELOPMENT_MODE);
 
-window.Db.Users = new PouchDB("http://"+pouchServer+":5984/users");
-window.Db.Scenarios = new PouchDB("http://"+pouchServer+":5984/scenarios");
-window.Db.Votes = new PouchDB("http://"+pouchServer+":5984/votes");
-window.AUTH_END_POINT = "http://"+pouchServer+":5984/users/_design/1/_view/auth?key=";
-window.VOTES_END_POINT = "http://"+pouchServer+":5984/votes/_design/1/_view/scenarios?key=";
+function configurePersistence(DEVELOPMENT_MODE) {
+  var couchDBServer = "https://troygdaniel.cloudant.com";
 
+  if (DEVELOPMENT_MODE === true) couchDBServer = "http://localhost:5984";
+
+  window.Session = {};
+  window.Db = {}
+  window.Db.Users = {};
+  window.Db.Scenarios = {};
+  window.Db.Votes = {};
+
+  window.Db.Users = new PouchDB(couchDBServer+"/users");
+  window.Db.Scenarios = new PouchDB(couchDBServer+"/scenarios");
+  window.Db.Votes = new PouchDB(couchDBServer+"/votes");
+  window.AUTH_END_POINT = couchDBServer+"/users/_design/1/_view/auth?key=";
+  window.VOTES_END_POINT = couchDBServer+"/votes/_design/1/_view/scenarios?key=";
+
+}
 
 Session.user = new User();
 Session.scenarioId = "";
