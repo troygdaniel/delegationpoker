@@ -209,7 +209,7 @@ var CastVoteView = React.createClass({
   },
 
   componentDidMount: function () {
-    // setInterval(this.props.onVoteSubmit,120000)
+    setInterval(this.props.onVoteSubmit,10000)
   },
 
   handleVote: function (e) {
