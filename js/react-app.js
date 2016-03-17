@@ -127,7 +127,7 @@ var ScenarioView = React.createClass({
   showCreateButton: function () {
     // Is the IF statement here is wrong - should render based on state?
     if (this.state.scenario.isNew() === true) {
-      return (<span><br/><input className="save-button" onClick={this.handleScenarioSubmit} type="submit" value="Create New Scenario"/></span>)
+      return (<ul className="actions"><li><input className="save-button" onClick={this.handleScenarioSubmit} type="submit" value="Create New Scenario"/></li></ul>)
     } else {
       return;
     }
@@ -154,7 +154,7 @@ var ScenarioView = React.createClass({
       return (
         <div>
           <CastVoteView user={this.props.user} scenario={this.state.scenario} onVoteSubmit={this.fetchScenario}/>
-          <a id="toggle-cards-button" className="button alt small" onClick={this.toggleAllVotes}>Show all cards</a>
+          <ul className="actions"><li><a id="toggle-cards-button" className="button alt small" onClick={this.toggleAllVotes}>Show all cards</a></li></ul>
           <br/><br/>
           {this.votes()}
         </div>
@@ -209,7 +209,7 @@ var CastVoteView = React.createClass({
   },
 
   componentDidMount: function () {
-    setInterval(this.props.onVoteSubmit,30000)
+    setInterval(this.props.onVoteSubmit,30000);
   },
 
   handleVote: function (e) {
