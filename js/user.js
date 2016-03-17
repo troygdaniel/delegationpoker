@@ -8,7 +8,7 @@ window.User =  function User(options){
 
 User.prototype.vote = function (scenario, _cardValue, onSuccess) {
   if (this.hasAuthenticated() === true) {
-    return new Vote({user:this, scenario:scenario, cardValue: _cardValue}, onSuccess);  
+    return new Vote({user:this, scenario:scenario, cardValue: _cardValue}, onSuccess);
   } else {
     return false;
   }
@@ -30,7 +30,7 @@ User.prototype.register = function(password, onSuccess, onFailure) {
     that.setCookie(that.username, password);
 
     if (onSuccess) onSuccess(doc);
-  }).catch(onFailure);  
+  }).catch(onFailure);
 
 
 };
@@ -52,12 +52,12 @@ User.prototype.signon = function(password, callback) {
 };
 
 User.prototype.setCookie = function (uid, pwd) {
-  Cookies.set('username', uid);
-  Cookies.set('password', pwd);
+  Cookies.set('username', uid, { expires: 365 });
+  Cookies.set('password', pwd, { expires: 365 });
 }
 
 User.prototype.fetchFromCookie = function (callback) {
-  var pwd = Cookies.set('password');
+  var pwd = Cookies.get('password');
   this.username = Cookies.get('username');
   this.signon(pwd, callback);
 }
