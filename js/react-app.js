@@ -137,7 +137,7 @@ var ScenarioView = React.createClass({
     if (this.userCreatedScenario() === true || this.state.scenario.isNew()) {
       return (<input id="scenario-name-textfield" type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>)
     } else {
-      return (<span>{this.state.scenarioName}<br/></span>)
+      return (<span><em>{this.state.scenarioName}</em><br/></span>)
     }
   },
 
@@ -229,12 +229,7 @@ var CastVoteView = React.createClass({
 
     if (!vote_value || typeof this.props.user === "undefined") { return; }
 
-    // TODO: remove these if statements - render based on state
-    if (this.props.user.vote(this.props.scenario, vote_value, this.props.onVoteSubmit) === false) {
-      App.errorMessage("Please sign in before voting.");
-    } else {
-      App.infoMessage("Vote saved.");
-    }
+    this.props.user.vote(this.props.scenario, vote_value, this.props.onVoteSubmit);
   },
 
   render: function () {
