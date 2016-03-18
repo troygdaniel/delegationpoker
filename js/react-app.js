@@ -74,7 +74,7 @@ var ScenarioView = React.createClass({
     // TODO: bind directly to state.scenario.name (not this.state.scenarioName)
     this.state.scenario.name = this.state.scenarioName;
     this.state.scenario.save(function() {
-      prompt("Copy and paste this link to play with others", that.state.scenario.shareableLink());
+      prompt("You may copy and share this link, or simply share the next page (you will be redirected after this prompt)", that.state.scenario.shareableLink());
       window.location.href = that.state.scenario.shareableLink(true);
     });
   },
@@ -130,6 +130,14 @@ var ScenarioView = React.createClass({
       return (<ul className="actions"><li><input className="save-button" onClick={this.handleScenarioSubmit} type="submit" value="Create New Scenario"/></li></ul>)
     } else {
       return;
+    }
+  },
+
+  showEditableScenario: function () {
+    if (this.userCreatedScenario() === true) {
+      return (<input id="scenario-name-textfield" type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>)
+    } else {
+      return (<span>{this.state.scenarioName}<br/></span>)
     }
   },
 
@@ -191,11 +199,11 @@ var ScenarioView = React.createClass({
     return (
       <div className="scenario-view">
         <form className="scenarioForm" onSubmit={this.handleScenarioSubmit}>
+          {this.showEditableScenario()}
           <span id="info-message">&nbsp;</span>
-          <input type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>
           {this.showCreateButton()}
+          {this.showVoting()}
         </form>
-        {this.showVoting()}
       </div>
     );
   }
@@ -231,7 +239,6 @@ var CastVoteView = React.createClass({
 
   render: function () {
     return (
-      <section>
         <ul className="actions small">
           <li><a data-value="1" onClick={this.handleVote} className="button small fit">1 - Tell</a></li>
           <li><a data-value="2" onClick={this.handleVote} className="button small fit">2 - Sell</a></li>
@@ -241,7 +248,6 @@ var CastVoteView = React.createClass({
           <li><a data-value="6" onClick={this.handleVote} className="button small fit">6 - Inquire</a></li>
           <li><a data-value="7" onClick={this.handleVote} className="button small fit">7 - Delegate</a></li>
         </ul>
-      </section>
     );
   }
 });

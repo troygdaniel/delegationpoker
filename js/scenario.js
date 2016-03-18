@@ -85,5 +85,10 @@ Scenario.prototype.isNew = function () {
 }
 
 Scenario.prototype.wasCreatedBy = function (user) {
-  return (user.username === this.user.username);
+  if (user && this.user) {
+    return (user.username === this.user.username);
+  } else {
+    return false;
+  }
+
 }
