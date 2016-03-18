@@ -105,9 +105,9 @@ Session.UserView = React.createClass({
     return (
       <div className="user-view">
         <form className="scenarioForm" onSubmit={this.handleSubmit}>
-          <span className="register-fields signin-fields"><input type="text" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/></span>
-          <span className="register-fields signin-fields"><input type="password" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/></span>
-          <span className="register-fields hidden" id="full-name"><input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/></span>          
+          <span className="register-fields signin-fields"><input type="text" autoCapitalize="none" placeholder="Username" value={this.state.username} onChange={this.handleUsername}/></span>
+          <span className="register-fields signin-fields"><input type="password" autoCapitalize="none" placeholder="Password" value={this.state.password} onChange={this.handlePassword}/></span>
+          <span className="register-fields hidden" id="full-name"><input type="text" placeholder="Full name" value={this.state.fullname} onChange={this.handleFullname}/></span>
           <ul className="actions">
           <li className="signin-fields"><a className="button small" onClick={this.handleSignOn} name="action">Sign in</a></li>
           <li className="signin-fields"><a className="button small alt" onClick={this.logoutAction}>Logout</a></li>
