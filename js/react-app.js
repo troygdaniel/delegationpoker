@@ -134,7 +134,7 @@ var ScenarioView = React.createClass({
   },
 
   showEditableScenario: function () {
-    if (this.userCreatedScenario() === true) {
+    if (this.userCreatedScenario() === true || this.state.scenario.isNew()) {
       return (<input id="scenario-name-textfield" type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>)
     } else {
       return (<span>{this.state.scenarioName}<br/></span>)
