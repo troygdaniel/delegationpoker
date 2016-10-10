@@ -1,5 +1,5 @@
 
-// SHITTY tests 
+// SHITTY tests
 window.TestCases = function () {
   TestCases.jiddu = new User({username:"krishnamurti_" + Date.now().toString(), fullname: "Jiddu Krishnamurti"});
   TestCases.jiddu_scenario = new Scenario({user: TestCases.jiddu, name: "Firing a employee"});
@@ -36,12 +36,12 @@ window.TestCases.prototype.test1 = function () {
       TestCases.jiddu_vote = TestCases.jiddu.vote(TestCases.jiddu_scenario, 1);
     });
   });
-}
+};
 
 window.TestCases.prototype.test2 = function () {
   // console.log("TEST2: Jiddu votes '2' for scenario");
     TestCases.jiddu_vote = TestCases.jiddu.vote(TestCases.jiddu_scenario, 2);
-}
+};
 
 window.TestCases.prototype.test3 = function () {
   // console.log("TEST3: Bruce registers and votes '3' for Jiddu's scenario.");
@@ -49,7 +49,7 @@ window.TestCases.prototype.test3 = function () {
   TestCases.bruce.register("testpass", function (json) {
     TestCases.bruce_vote1 = TestCases.bruce.vote(TestCases.jiddu_scenario, 3);
   });
-}
+};
 
 window.TestCases.prototype.test4 = function () {
 
@@ -58,7 +58,7 @@ window.TestCases.prototype.test4 = function () {
       console.log(">> FAILED TEST4: Bruce fails to sign on");
     }
   });
-}
+};
 
 window.TestCases.prototype.test5 = function () {
 
@@ -69,22 +69,22 @@ window.TestCases.prototype.test5 = function () {
 
     TestCases.bruce_vote1 = TestCases.bruce.vote(TestCases.jiddu_scenario, 3);
   });
-}
+};
 
 window.TestCases.prototype.test6 = function () {
   // console.log("TEST6: createTroyAccount");
   TestCases.troy.register("goobers");
-}
+};
 
 window.TestCases.prototype.test7 = function () {
   // console.log("TEST7: Create Scenario For Troy");
   TestCases.troy_scenario.save();
-}
+};
 
 window.TestCases.prototype.test8 = function () {
   // console.log("TEST8: Bruce votes '6' for Troy's scenario")
   TestCases.bruce_vote2 = TestCases.bruce.vote(TestCases.troy_scenario, 6);
-}
+};
 
 window.TestCases.prototype.test9 = function () {
   TestCases.troy.signon("goobers", function (){
@@ -92,7 +92,7 @@ window.TestCases.prototype.test9 = function () {
   }, function () {
     console.log(">> FAILED TEST: TEST 9: Troy Signon");
   });
-}
+};
 
 window.TestCases.prototype.test10 = function () {
   TestCases.troy.signon("badpassword", function () {
@@ -100,17 +100,17 @@ window.TestCases.prototype.test10 = function () {
       console.log(">> FAILED TEST 10: Troy failed signon");
     }
   });
-}
+};
 
 window.TestCases.prototype.test11 = function () {
   // console.log("TEST 11: Get all votes for Troy");
   console.log(TestCases.troy_scenario.votes);
-}
+};
 
 window.TestCases.prototype.test12 = function () {
   // console.log("TEST 12: Get all votes for Jiddu");
   console.log(TestCases.jiddu_scenario.votes);
-}
+};
 
 window.TestCases.prototype.test13 = function () {
   var x = new Scenario();
@@ -121,7 +121,7 @@ window.TestCases.prototype.test13 = function () {
        // console.log(">> pass TEST 13: Fetch troy scenario");
     }
   });
-}
+};
 
 window.TestCases.prototype.test14 = function () {
   var x = new Scenario();
@@ -132,11 +132,11 @@ window.TestCases.prototype.test14 = function () {
       console.log(">> FAIL TEST 14: Fetch invalid scenario");
     }
   });
-}
+};
 
 window.TestCases.prototype.finalMssg = function () {
   console.log("Tests complete... waiting 1 min before cleanup.");
-}
+};
 
 window.TestCases.prototype.cleanup = function () {
   console.log("Cleaning up after tests.");
@@ -148,4 +148,4 @@ window.TestCases.prototype.cleanup = function () {
   TestCases.bruce_vote2.remove();
   TestCases.troy.remove();
   TestCases.troy_scenario.remove();
-}
+};

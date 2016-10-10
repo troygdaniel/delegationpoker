@@ -127,8 +127,7 @@ var _h = {
 
         return string;
     }
-
-}
+};
 
 function configurePersistence(DEVELOPMENT_MODE) {
   var couchDBServer = _h.url("aHR0cHM6Ly90cm95Z2RhbmllbC5jbG91ZGFudC5jb20=");
@@ -136,7 +135,7 @@ function configurePersistence(DEVELOPMENT_MODE) {
   if (DEVELOPMENT_MODE === true) couchDBServer = _h.url("aHR0cDovL2xvY2FsaG9zdDo1OTg0");
 
   window.Session = {};
-  window.Db = {}
+  window.Db = {};
   window.Db.Users = {};
   window.Db.Scenarios = {};
   window.Db.Votes = {};

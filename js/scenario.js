@@ -3,7 +3,7 @@ window.Scenario =  function Scenario(options) {
     this.name = options.name;
     this.user = options.user;
   }
-}
+};
 
 Scenario.prototype.save = function (callback) {
   var that = this;
@@ -62,7 +62,7 @@ Scenario.prototype.get = function (id, callback) {
   }).catch(function (err) {
     if (callback) { callback(err); }
   });
-}
+};
 
 Scenario.prototype.shareableLink = function (shouldReload) {
   var baseURL = window.location.href;
@@ -74,15 +74,15 @@ Scenario.prototype.shareableLink = function (shouldReload) {
   } else {
     return baseURL+"#"+this.id;
   }
-}
+};
 
 Scenario.prototype.remove = function () {
   return Db.Scenarios.remove(this.id, this.rev);
-}
+};
 
 Scenario.prototype.isNew = function () {
   return (typeof this.rev === "undefined");
-}
+};
 
 Scenario.prototype.wasCreatedBy = function (user) {
   if (user && this.user) {
@@ -90,5 +90,4 @@ Scenario.prototype.wasCreatedBy = function (user) {
   } else {
     return false;
   }
-
-}
+};

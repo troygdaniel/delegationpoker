@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 // UserView
 var UserView = React.createClass({
@@ -30,7 +30,7 @@ var UserView = React.createClass({
   render: function () {
     return (
       <div className="user-view">
-        <ScenarioView user={this.state.user} scenarioId={Session.scenarioId} ></ScenarioView>
+        <ScenarioView user={this.state.user} scenarioId={Session.scenarioId}></ScenarioView>
       </div>
     );
   }
@@ -93,7 +93,7 @@ var ScenarioView = React.createClass({
     if (this.hasValidationErrors() === true) { return; }
 
     if (this.state.scenario.isNew() === true) {
-      this.saveScenario()
+      this.saveScenario();
     } else {
       if (this.userCreatedScenario()) {
         this.updateScenario();
@@ -136,6 +136,8 @@ var ScenarioView = React.createClass({
   showEditableScenario: function () {
     if (this.userCreatedScenario() === true || this.state.scenario.isNew()) {
       return (<input id="scenario-name-textfield" type="text" placeholder="Scenario name" value={this.state.scenarioName} onChange={this.handleScenarioName}/>)
+
+
     } else {
       return (<span><em>{this.state.scenarioName}</em><br/></span>)
     }

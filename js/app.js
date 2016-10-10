@@ -19,20 +19,20 @@ window.App =  {};
 App.infoMessage = function(t) {
   $("#info-message").css('color','blue');
   App.setMessage(t);
-}
+};
 
 App.errorMessage = function(t) {
   $("#info-message").css('color','red');
   App.setMessage(t);
   return true;
-}
+};
 
 App.setMessage = function(t) {
   $("#info-message").text(t);
   setTimeout(App.clearInfo,1200);
-}
+};
 
 App.clearInfo = function() {
   console.log("clearInfo");
   $("#info-message").removeAttr('style');
-}
+};
